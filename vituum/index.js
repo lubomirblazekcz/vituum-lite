@@ -3,8 +3,6 @@ import pc from 'picocolors'
 import { version } from 'vite'
 import pluginPages from "./pages.js"
 
-const start = new Date()
-
 let userConfig
 let userEnv
 
@@ -35,8 +33,6 @@ const pluginCore = () => ({
 
         await rename('dist/src/pages/index.liquid.html', 'dist/index.html')
         await rm('dist/src', { recursive: true })
-
-        console.info(`${pc.cyan(`vite v${version}`)} ${pc.green(`build finished in ${pc.gray(new Date() - start + 'ms')}`)}`)
     }
 })
 

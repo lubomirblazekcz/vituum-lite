@@ -4,7 +4,7 @@ import liquid from '@vituum/vite-plugin-liquid'
 
 export default {
     plugins: [
-        ...vituum({
+        vituum({
             pages: {
                 dir: 'src/pages',
                 formats: ['liquid'],
