@@ -1,6 +1,4 @@
-import { rename, rm } from 'node:fs/promises'
-import pc from 'picocolors'
-import { version } from 'vite'
+import { rename } from 'node:fs/promises'
 import pluginPages from "./pages.js"
 
 let userConfig
@@ -8,11 +6,12 @@ let userEnv
 
 const pluginCore = () => ({
     name: '@vituum/vite-plugin-core',
+    enforce: 'post',
     config (config, env) {
         userConfig = config
         userEnv = env
     },
-    buildStart: async (config) => {
+    buildStart: async () => {
         if (userEnv.command !== 'build') {
             return
         }
@@ -26,13 +25,8 @@ const pluginCore = () => ({
 
         await rename('src/pages/index.liquid.html', 'src/pages/index.liquid')
     },
-    closeBundle: async () => {
-        if (userEnv.command !== 'build') {
-            return
-        }
-
-        await rename('dist/src/pages/index.liquid.html', 'dist/index.html')
-        await rm('dist/src', { recursive: true })
+    generateBundle(options, bundle) {
+        bundle['src/pages/index.liquid.html'].fileName = 'index.html'
     }
 })
 
