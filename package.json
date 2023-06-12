@@ -9,7 +9,12 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^4.2.1",
-    "@vituum/vite-plugin-liquid": "^0.1.5"
+    "vite": "^4.3.9",
+    "fast-glob": "^3.2.12",
+    "lodash": "^4.17.21",
+    "liquidjs": "^10.8.2",
+    "vituum": "^1.0.0-alpha.2",
+    "@vituum/vite-plugin-liquid": "^0.1.5",
+    "eslint-config-standard": "^17.1.0"
   }
 }
