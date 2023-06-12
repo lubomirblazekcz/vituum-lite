@@ -16,7 +16,11 @@ const defaultOptions = {
     globals: {},
     data: '',
     formats: ['liquid', 'json.liquid'],
-    liquid: {}
+    liquid: {
+        options: {},
+        renderOptions: {},
+        renderFileOptions: {}
+    }
 }
 
 function processData (paths, data = {}) {
@@ -40,14 +44,11 @@ const renderTemplate = async (filename, content, options) => {
     const context = options.data ? processData(options.data, options.globals) : options.globals
 
     const isJson = false
-    const isHtml = true
 
-    if (isJson || isHtml) {
-        // lodash.merge(context, isHtml ? content : JSON.parse(fs.readFileSync(filename).toString()))
+    if (isJson) {
+        lodash.merge(context, JSON.parse(fs.readFileSync(filename).toString()))
 
         output.template = true
-
-        console.log(processData(options.data, options.globals))
 
         if (typeof context.template === 'undefined') {
             console.error(pc.red(name + ' template must be defined - ' + filename))
@@ -62,7 +63,7 @@ const renderTemplate = async (filename, content, options) => {
 
     const liquid = new Liquid(Object.assign({
         root: options.root
-    }, options.liquid))
+    }, options.liquid.options))
 
     Object.keys(options.filters).forEach(name => {
         if (typeof options.filters[name] !== 'function') {
@@ -92,9 +93,9 @@ const renderTemplate = async (filename, content, options) => {
         }
 
         if (output.template) {
-            output.content = liquid.renderFile(context.template, context).catch(onError).then(onSuccess)
+            output.content = liquid.renderFile(context.template, context, options.liquid.renderFileOptions).catch(onError).then(onSuccess)
         } else {
-            output.content = liquid.parseAndRender(content, context).catch(onError).then(onSuccess)
+            output.content = liquid.parseAndRender(content, context, options.liquid.renderOptions).catch(onError).then(onSuccess)
         }
     })
 }
