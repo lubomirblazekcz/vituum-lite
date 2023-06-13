@@ -1,5 +1,6 @@
 import pluginPages from './pages.js'
 import { resolveInputPaths, renameGenerateBundle } from 'vituum/utils/build.js'
+import { relative } from 'path'
 
 let userConfig
 let resolvedConfig
@@ -22,7 +23,18 @@ const pluginCore = (pluginUserConfig) => ({
             resolvedConfig.build.rollupOptions.input,
             pluginUserConfig.pages.formats,
             bundle,
-            pluginUserConfig.pages.dir[0]
+            file => {
+                const pagesDir = relative(resolvedConfig.root, pluginUserConfig.pages.dir)
+                const pagesRoot = relative(resolvedConfig.root, pluginUserConfig.pages.root)
+
+                if (file.includes(pagesDir)) {
+                    return relative(pagesDir, file)
+                } else if (file.includes(pagesRoot)) {
+                    return relative(pagesRoot, file)
+                } else {
+                    return file
+                }
+            }
         )
     }
 })
