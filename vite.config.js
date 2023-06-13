@@ -1,18 +1,10 @@
-import vituum from './vituum/index.js'
+import vituum from 'vituum'
 import liquid from '@vituum/vite-plugin-liquid'
 import juice from '@vituum/vite-plugin-juice'
-import { resolve } from 'node:path'
 
 export default {
     plugins: [
-        vituum({
-            pages: {
-                root: resolve(process.cwd(), 'src'),
-                dir: './src/pages',
-                formats: ['json', 'latte', 'twig', 'liquid', 'njk', 'hbs', 'pug'],
-                ignoredPaths: []
-            }
-        }),
+        vituum(),
         liquid({
             data: ['src/data/**/*.json'],
             formats: ['liquid', 'json.liquid', 'json']

@@ -13,7 +13,7 @@
     "fast-glob": "^3.2.12",
     "lodash": "^4.17.21",
     "liquidjs": "^10.8.2",
-    "vituum": "^1.0.0-alpha.4",
+    "vituum": "^1.0.0-alpha.5",
     "@vituum/vite-plugin-liquid": "^1.0.0-alpha.1",
     "@vituum/vite-plugin-juice": "^0.1.8",
     "eslint-config-standard": "^17.1.0"
