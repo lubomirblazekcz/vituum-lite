@@ -1,3 +1,4 @@
 export default {
-    formats: []
+    formats: [],
+    pagesDir: ['src/pages']
 }

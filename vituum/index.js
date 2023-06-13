@@ -1,38 +1,28 @@
 import pluginPages from './pages.js'
-import { resolveInputPaths, renameBuildStart, renameBuildEnd, renameGenerateBundle } from 'vituum/utils/build.js'
+import { resolveInputPaths, renameGenerateBundle } from 'vituum/utils/build.js'
 
 let userConfig
-let userEnv
+let resolvedConfig
 
 const pluginCore = (pluginUserConfig) => ({
     name: '@vituum/vite-plugin-core',
     enforce: 'post',
-    config (config, env) {
+    config (config) {
         userConfig = config
-        userEnv = env
 
-        userConfig.build.rollupOptions.input = resolveInputPaths(userConfig.build.rollupOptions.input, pluginUserConfig.formats)
-    },
-    buildStart: async () => {
-        if (userEnv.command !== 'build') {
-            return
+        if (userConfig?.build?.rollupOptions?.input) {
+            userConfig.build.rollupOptions.input = resolveInputPaths(userConfig.build.rollupOptions.input, pluginUserConfig.pages.formats)
         }
-
-        await renameBuildStart(userConfig.build.rollupOptions.input, pluginUserConfig.formats)
     },
-    buildEnd: async () => {
-        if (userEnv.command !== 'build') {
-            return
-        }
-
-        await renameBuildEnd(userConfig.build.rollupOptions.input, pluginUserConfig.formats)
+    configResolved (config) {
+        resolvedConfig = config
     },
     generateBundle: async (_, bundle) => {
         await renameGenerateBundle(
-            userConfig.build.rollupOptions.input,
-            pluginUserConfig.formats,
+            resolvedConfig.build.rollupOptions.input,
+            pluginUserConfig.pages.formats,
             bundle,
-            pluginUserConfig.pagesDir[0]
+            pluginUserConfig.pages.dir[0]
         )
     }
 })

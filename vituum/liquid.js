@@ -1,11 +1,10 @@
-import { resolve, relative } from 'path'
-import fs from 'fs'
+import { resolve, relative } from 'node:path'
+import fs from 'node:fs'
 import process from 'node:process'
-import FastGlob from 'fast-glob'
 import lodash from 'lodash'
-import pc from 'picocolors'
 import { Liquid } from 'liquidjs'
-import { getPackageInfo, pluginError, pluginReload } from 'vituum/utils/common.js'
+import { getPackageInfo, pluginError, pluginReload, processData, pluginBundle } from './common.js'
+import { renameBuildEnd, renameBuildStart } from 'vituum/utils/build'
 
 const { name } = getPackageInfo(import.meta.url)
 const defaultOptions = {
@@ -14,7 +13,7 @@ const defaultOptions = {
     filters: {},
     tags: {},
     globals: {},
-    data: '',
+    data: null,
     formats: ['liquid', 'json.liquid'],
     liquid: {
         options: {},
@@ -23,42 +22,30 @@ const defaultOptions = {
     }
 }
 
-function processData (paths, data = {}) {
-    let context = {}
-
-    lodash.merge(context, data)
-
-    const normalizePaths = Array.isArray(paths) ? paths.map(path => path.replace(/\\/g, '/')) : paths.replace(/\\/g, '/')
-
-    FastGlob.sync(normalizePaths).forEach(entry => {
-        const path = resolve(process.cwd(), entry)
-
-        context = lodash.merge(context, JSON.parse(fs.readFileSync(path).toString()))
-    })
-
-    return context
-}
-
 const renderTemplate = async (filename, content, options) => {
+    const initialFilename = filename.replace('.html', '')
     const output = {}
     const context = options.data ? processData(options.data, options.globals) : options.globals
 
-    const isJson = false
-
-    if (isJson) {
+    if (initialFilename.endsWith('.json')) {
         lodash.merge(context, JSON.parse(fs.readFileSync(filename).toString()))
 
         output.template = true
 
         if (typeof context.template === 'undefined') {
-            console.error(pc.red(name + ' template must be defined - ' + filename))
+            const error = `${name}: template must be defined for file ${initialFilename}`
+
+            return new Promise((resolve) => {
+                output.error = error
+                resolve(output)
+            })
         }
 
         context.template = relative(process.cwd(), context.template).startsWith(relative(process.cwd(), options.root))
             ? resolve(process.cwd(), context.template)
             : resolve(options.root, context.template)
-    } else if (fs.existsSync(filename + '.json')) {
-        lodash.merge(context, JSON.parse(fs.readFileSync(filename + '.json').toString()))
+    } else if (fs.existsSync(`${initialFilename}.json`)) {
+        lodash.merge(context, JSON.parse(fs.readFileSync(`${initialFilename}.json`).toString()))
     }
 
     const liquid = new Liquid(Object.assign({
@@ -101,14 +88,36 @@ const renderTemplate = async (filename, content, options) => {
 }
 
 const plugin = (options = {}) => {
+    let resolvedConfig
+    let userEnv
+
     options = lodash.merge(defaultOptions, options)
 
-    return {
+    return [{
         name,
-        config: ({ root }) => {
+        config (config, env) {
+            userEnv = env
+        },
+        configResolved (config) {
+            resolvedConfig = config
+
             if (!options.root) {
-                options.root = root
+                options.root = config.root
             }
+        },
+        buildStart: async () => {
+            if (userEnv.command !== 'build') {
+                return
+            }
+
+            await renameBuildStart(resolvedConfig.build.rollupOptions.input, options.formats)
+        },
+        buildEnd: async () => {
+            if (userEnv.command !== 'build') {
+                return
+            }
+
+            await renameBuildEnd(resolvedConfig.build.rollupOptions.input, options.formats)
         },
         transformIndexHtml: {
             enforce: 'pre',
@@ -121,16 +130,17 @@ const plugin = (options = {}) => {
                 }
 
                 const render = await renderTemplate(filename, content, options)
+                const renderError = pluginError(render.error, server)
 
-                if (pluginError(render, server)) {
-                    return
+                if (renderError) {
+                    return renderError
                 }
 
                 return render.content
             }
         },
         handleHotUpdate: ({ file, server }) => pluginReload({ file, server }, options)
-    }
+    }, pluginBundle(options.formats)]
 }
 
 export default plugin

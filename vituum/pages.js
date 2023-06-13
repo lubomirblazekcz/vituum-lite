@@ -4,14 +4,14 @@ import { join, resolve, relative } from 'node:path'
 const plugin = (pluginUserConfig) => ({
     name: '@vituum/vite-plugin-pages',
     apply: 'serve',
-    configureServer(viteDevServer) {
-        const viewsDir = resolve(viteDevServer.config.root, pluginUserConfig.pages.dir)
+    configureServer (viteDevServer) {
+        const viewsDir = resolve(viteDevServer.config.root, pluginUserConfig.pages.dir[0])
         const viewsUrl = relative(viteDevServer.config.root, viewsDir)
         const viewsIgnoredPaths = pluginUserConfig.pages.ignoredPaths
         const supportedFormats = pluginUserConfig.pages.formats
 
         return () => {
-            viteDevServer.middlewares.use(async(req, res, next) => {
+            viteDevServer.middlewares.use(async (req, res, next) => {
                 let format = null
                 let transformedUrl = req.originalUrl.replace('.html', '')
 
