@@ -10,11 +10,11 @@
   },
   "devDependencies": {
     "vite": "^4.3.9",
-    "fast-glob": "^3.2.12",
     "lodash": "^4.17.21",
-    "liquidjs": "^10.8.2",
-    "vituum": "^1.0.0-alpha.5",
-    "@vituum/vite-plugin-liquid": "^1.0.0-alpha.1",
+    "chokidar": "^3.5.3",
+    "fast-glob": "^3.2.12",
+    "vituum": "^1.0.0-alpha.13",
+    "@vituum/vite-plugin-liquid": "^1.0.0-alpha.3",
     "@vituum/vite-plugin-juice": "^0.1.8",
     "eslint-config-standard": "^17.1.0"
   }
