@@ -1,3 +1,4 @@
 {
-  "global": "Test"
+  "global": "Test",
+  "format": "liquid"
 }

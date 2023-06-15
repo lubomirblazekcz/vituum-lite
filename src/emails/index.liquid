@@ -1,21 +1,33 @@
-{% layout "src/layouts/Layout.liquid" %}
-
-{% block %}
-<div id="app">
-    <div>
-        {{ global }}
-        {{ test }}
-        <a href="https://vitejs.dev" target="_blank">
-            <img src="/vite.svg" class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-            <img src="/src/assets/javascript.svg" class="logo vanilla" alt="JavaScript logo" />
-        </a>
-        <h1>Hello Vite!</h1>
-        {% render 'src/components/Counter.liquid' %}
-        <p class="read-the-docs">
-            Click on the Vite logo to learn more
-        </p>
+<!DOCTYPE html>
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+    <!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      @import "/src/main.css";
+    </style>
+</head>
+<body>
+<table>
+    <div id="app">
+        <div>
+            {{ global }}
+            {{ test }}
+            <a href="https://vitejs.dev" target="_blank">
+                <img src="/vite.svg" class="logo" alt="Vite logo" />
+            </a>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
+                <img src="/src/assets/javascript.svg" class="logo vanilla" alt="JavaScript logo" />
+            </a>
+            <h1>Hello Vite!</h1>
+            {% render 'src/components/Counter.liquid' %}
+            <p class="read-the-docs">
+                Click on the Vite logo to learn more
+            </p>
+        </div>
     </div>
-</div>
-{% endblock %}
+</table>
+</body>
+</html>
